@@ -1,0 +1,25 @@
+- name: Install Alertmanager
+  shell: |
+    wget https://github.com/prometheus/prometheus/releases/download/v2.52.0/prometheus-2.52.0.linux-amd64.tar.gz 
+    tar xvfz alertmanager-*.tar.gz
+    sudo mv alertmanager-*/alertmanager /usr/local/bin/
+    sudo mv alertmanager-*/amtool /usr/local/bin/
+    sudo mv alertmanager-*/alertmanager.yml /etc/alertmanager/
+    sudo useradd -rs /bin/false alertmanager
+    sudo tee /etc/systemd/system/alertmanager.service <<EOF
+    [Unit]
+    Description=Alertmanager
+    After=network.target
+
+    [Service]
+    User=alertmanager
+    Group=alertmanager
+    Type=simple
+    ExecStart=/usr/local/bin/alertmanager --config.file=/etc/alertmanager/alertmanager.yml
+
+    [Install]
+    WantedBy=multi-user.target
+    EOF
+    sudo systemctl daemon-reload
+    sudo systemctl start alertmanager
+    sudo systemctl enable alertmanager

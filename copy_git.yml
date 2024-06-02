@@ -1,0 +1,18 @@
+---
+- name: Clone Git repository and run playbook
+  hosts: localhost
+  tasks:
+    - name: Check if destination directory exists, if not create directory
+      ansible.builtin.file:
+        path: /var/ansible/
+        state: directory
+
+    - name: Clone Git repository
+      git:
+        repo: git@github.com:dav1dfender/Ansible-Monitoring
+        dest: /var/ansible/
+        clone: yes
+        update: yes
+
+    - name: Run playbook
+      ansible.builtin.command: ansible-playbook /tmp/var/ansible_project.yml

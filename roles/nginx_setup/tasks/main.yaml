@@ -1,0 +1,29 @@
+- name: adding nginx repo key
+  apt_key:
+    url: http://nginx.org/keys/nginx_signing.key
+    state: present
+
+- name: add nginx repo
+  apt_repository:
+    repo: "deb http://nginx.org/packages/ubuntu/ jammy nginx"
+    state: present
+
+- name: install nginx and update apt cache
+  apt:
+    name: nginx
+    state: latest
+    update_cache: yes
+
+- name: transfer nginx config file from template
+  template:
+    src: templates/nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: make sure that nginx is enabled and running
+  service:
+    name: nginx
+    state: restarted
+    enabled: yes
